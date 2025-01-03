@@ -39,7 +39,6 @@ pipeline {
                 bat '''
                 set PATH=%SCANNER_PATH%;%PATH%
                 sonar-scanner -Dsonar.projectKey=MERN-Task-Krishna-Jarhad ^
-                              -Dsonar.projectName=MERN Task Krishna Jarhad ^
                               -Dsonar.sources=. ^
                               -Dsonar.host.url=http://localhost:9000 ^
                               -Dsonar.token=%SONAR_TOKEN%
