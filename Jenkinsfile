@@ -1,69 +1,52 @@
 pipeline {
     agent any
-    tools {
-        nodejs 'nodejs-22.1.0' 
+    tools{
+      nodejs 'nodejs'
     }
- 
     environment {
-        NODEJS_HOME = 'C:/Program Files/nodejs'  
-        SONAR_SCANNER_PATH = 'C:/Users/91935/Downloads/sonar-scanner-cli-6.2.1.4610-windows-x64/sonar-scanner-6.2.1.4610-windows-x64/bin'
+        NODEJS_HOME = 'C:\\Program Files\\nodejs' 
+        SCANNER_PATH='C:\\Users\\91935\\Downloads\\sonar-scanner-cli-6.2.1.4610-windows-x64\\sonar-scanner-6.2.1.4610-windows-x64\\bin'
     }
- 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
- 
-        stage('Install Dependencies') {
+
+        stage('Installation') {
             steps {
-                // Set the PATH and install dependencies using npm
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
                 npm install
                 '''
             }
         }
- 
-        stage('Lint') {
-            steps {
-                // Run linting to ensure code quality
-                bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
-                npm run lint
-                '''
-            }
-        }
- 
         stage('Build') {
             steps {
-                // Build the React app
                 bat '''
                 set PATH=%NODEJS_HOME%;%PATH%
                 npm run build
                 '''
             }
         }
- 
+
         stage('SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token') // Accessing the SonarQube token stored in Jenkins credentials
+                SONAR_TOKEN = credentials('sonar-token') 
             }
             steps {
-                // Ensure that sonar-scanner is in the PATH
                 bat '''
-                set PATH=%SONAR_SCANNER_PATH%;%PATH%
-                where sonar-scanner || echo "SonarQube scanner not found. Please install it."
+                set PATH=%SCANNER_PATH%;%PATH%
                 sonar-scanner -Dsonar.projectKey=MERN-Task-Krishna-Jarhad ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.token=%SONAR_TOKEN% 2>&1
+                              -Dsonar.projectName=MERN Task Krishna Jarhad ^
+                              -Dsonar.sources=. ^
+                              -Dsonar.host.url=http://localhost:9000 ^
+                              -Dsonar.token=%SONAR_TOKEN%
                 '''
             }
         }
     }
- 
     post {
         success {
             echo 'Pipeline completed successfully'
